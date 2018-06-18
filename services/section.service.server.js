@@ -44,7 +44,7 @@ module.exports = function (app) {
   function deleteSection(req, res) {
     var sectionId = req.params['sectionId'];
     sectionModel
-      .deleteSectionc(sectionId)
+      .deleteSection(sectionId)
       .then(function (sections) {
         res.json(sections);
       })
