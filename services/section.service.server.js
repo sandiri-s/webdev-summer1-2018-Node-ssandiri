@@ -5,7 +5,8 @@ module.exports = function (app) {
   app.post('/api/section/:sectionId/enrollment', enrollStudentInSection);
   app.get('/api/student/section', findSectionsForStudent);
   app.delete('/api/section/:sectionId', deleteSection);
-  app.put('/api/section/:sectionId', updateSection)
+  app.put('/api/section/:sectionId', updateSection);
+  app.delete('/api/section/:sectionId/enrollment', unrollStudentInSection);
 
 
   var sectionModel = require('../models/section/section.model.server');
@@ -19,6 +20,27 @@ module.exports = function (app) {
       .then(function(enrollments) {
         res.json(enrollments);
       });
+  }
+
+
+  function unrollStudentInSection(req, res) {
+    var sectionId = req.params.sectionId;
+    var currentUser = req.session.currentUser;
+    var studentId = currentUser._id;
+    var enrollment = {
+      student: studentId,
+      section: sectionId
+    };
+
+    sectionModel
+      .incrementSectionSeats(sectionId)
+      .then(function () {
+        return enrollmentModel
+          .unrollStudentInSection(enrollment)
+      })
+      .then(function (enrollment) {
+        res.json(enrollment);
+      })
   }
 
   function enrollStudentInSection(req, res) {
