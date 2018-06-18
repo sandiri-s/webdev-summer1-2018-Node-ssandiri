@@ -1,6 +1,7 @@
 module.exports = function (app) {
   app.get('/api/user', findAllUsers);
   app.get('/api/user/:userId', findUserById);
+  app.get('/api/user/:username/username', findUserByUsername);
   app.post('/api/user', createUser);
   app.get('/api/profile', profile);
   app.post('/api/logout', logout);
@@ -21,6 +22,14 @@ module.exports = function (app) {
   function logout(req, res) {
     req.session.destroy();
     res.send(200);
+  }
+
+  function findUserByUsername(req, res) {
+    var username = req.params['username'];
+    userModel.findUserByCredentials({username:username})
+      .then(function (user) {
+        res.json(user);
+      })
   }
 
   function findUserById(req, res) {
