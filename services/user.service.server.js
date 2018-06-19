@@ -15,7 +15,9 @@ module.exports = function (app) {
     userModel
       .findUserByCredentials(credentials)
       .then(function(user) {
-        req.session['currentUser'] = user;
+        if(user!==null){
+          req.session['currentUser'] = user;
+        }
         res.json(user);
       })
   }
