@@ -6,6 +6,7 @@ module.exports = function (app) {
   app.get('/api/profile', profile);
   app.post('/api/logout', logout);
   app.post('/api/login', login);
+  app.put('/api/user', update);
 
   var userModel = require('../models/user/user.model.server');
 
@@ -22,6 +23,15 @@ module.exports = function (app) {
   function logout(req, res) {
     req.session.destroy();
     res.send(200);
+  }
+
+  function update(req, res) {
+    var user = req.body;
+    userId = req.session.currentUser._id;
+    userModel.updateUser(user,userId)
+      .then(function (user) {
+        res.json(user);
+      })
   }
 
   function findUserByUsername(req, res) {
@@ -41,8 +51,20 @@ module.exports = function (app) {
   }
 
   function profile(req, res) {
-    res.send(req.session['currentUser']);
+
+    if(typeof req.session.currentUser === 'undefined')
+    {
+      res.send(null);
+    }
+    else {
+      var userId = req.session.currentUser._id;
+
+    userModel.findUserById(userId)
+      .then(function (user) {
+        res.send(user);
+      })
   }
+}
 
   function createUser(req, res) {
     var user = req.body;
